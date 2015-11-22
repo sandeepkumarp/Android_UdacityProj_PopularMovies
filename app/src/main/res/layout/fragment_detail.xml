@@ -1,43 +1,66 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.creativespringbok.popularmovies.DetailActivityFragment"
-    tools:showIn="@layout/activity_detail">
+
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <TextView
         android:id="@+id/movie_item_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="_MOVIE_TITLE  UNAVAILABLE_" />
+        android:gravity="center"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="16dp"
+        android:text="_MOVIE_TITLE  UNAVAILABLE_"
+        android:textSize="21sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="24dp">
 
         <ImageView
             android:id="@+id/movie_item_poster"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:scaleType="fitCenter"
+            android:src="@drawable/sample_1" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp">
 
             <TextView
                 android:id="@+id/movie_item_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="_RATING  UNAVAILABLE_" />
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="_RATING  UNAVAILABLE_"
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/movie_item_release_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="_REL DATE  UNAVAILABLE_" />
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="_REL DATE  UNAVAILABLE_"
+                android:textSize="17sp" />
 
         </LinearLayout>
 
@@ -45,8 +68,13 @@
 
     <TextView
         android:id="@+id/movie_item_synopsis"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="_SYNOPSIS UNAVAILABLE_" />
+        android:paddingLeft="8dp"
+        android:paddingRight="8sp"
+        android:paddingTop="24dp"
+        android:text="_SYNOPSIS UNAVAILABLE_"
+        android:textSize="15sp" />
 
 </LinearLayout>
+</ScrollView>

@@ -1,6 +1,7 @@
 package com.creativespringbok.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -23,26 +26,36 @@ public class DetailActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         Intent intent = getActivity().getIntent();
-        if (intent != null) {
-            Bundle extras = intent.getExtras();
+        if (intent != null && intent.hasExtra(Movie.MOVIE_BUNDLE_TAG)) {
 
-            String titleStr = extras.getString("ITEM_TITLE");
+            Movie movie = new Movie(intent.getBundleExtra(Movie.MOVIE_BUNDLE_TAG));
+
+            String titleStr = movie.title;
             if (titleStr != null) {
                 ((TextView) rootView.findViewById(R.id.movie_item_title)).setText(titleStr);
             }
-            Integer posterStr = extras.getInt("ITEM_POSTER");
+            String posterStr = movie.poster_path;
             if (posterStr != null) {
-                ((ImageView) rootView.findViewById(R.id.movie_item_poster)).setImageResource(posterStr);
+                final String BASE_URL = "http://image.tmdb.org/t/p/";
+                Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+                        // TODO: 14-11-2015 make this size dynamic 
+                        .appendPath("w342")                               //passed as input  "w92", "w154", "w185", "w342", "w500", "w780", or "original"
+                        .appendEncodedPath(posterStr)
+                        .build();
+
+                Picasso.with(getContext()).load(builtUri.toString()).into((ImageView) rootView.findViewById(R.id.movie_item_poster));
+//                ((ImageView) rootView.findViewById(R.id.movie_item_poster)).setImageResource(posterStr);
             }
-            String ratingStr = extras.getString("ITEM_RATING");
+            String ratingStr = movie.vote_average.toString() + "/" + movie.vote_count.toString();
             if (ratingStr != null) {
-                ((TextView) rootView.findViewById(R.id.movie_item_rating)).setText(ratingStr);
+                ((TextView) rootView.findViewById(R.id.movie_item_rating)).setText(ratingStr.toString());
             }
-            String rel_date_Str = extras.getString("ITEM_RELEASE_DATE");
-            if (rel_date_Str != null) {
-                ((TextView) rootView.findViewById(R.id.movie_item_release_date)).setText(rel_date_Str);
-            }
-            String synopsisStr = extras.getString("ITEM_SYNOPSIS");
+//            Log.v("Detail Activity", posterStr.toString());
+//            String rel_date_Str = extras.getString("ITEM_RELEASE_DATE");
+//            if (rel_date_Str != null) {
+//                ((TextView) rootView.findViewById(R.id.movie_item_release_date)).setText(rel_date_Str);
+//            }
+            String synopsisStr = movie.overview;
             if (synopsisStr != null) {
                 ((TextView) rootView.findViewById(R.id.movie_item_synopsis)).setText(synopsisStr);
             }

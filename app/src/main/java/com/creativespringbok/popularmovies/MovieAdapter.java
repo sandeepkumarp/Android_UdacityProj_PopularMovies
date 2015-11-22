@@ -1,42 +1,106 @@
 package com.creativespringbok.popularmovies;
 
-import android.app.Activity;
-import android.view.LayoutInflater;
+import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 
-import java.util.List;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Sandeep on 08-11-2015.
  */
-public class MovieAdapter extends ArrayAdapter<Movie> {
+public class MovieAdapter extends BaseAdapter {
 
-    public static final String LOG_CAT = MovieAdapter.class.getSimpleName();
+    public static final String LOG_TAG = MovieAdapter.class.getSimpleName();
+    private final ArrayList<Movie> mMovies;
+    private Context mContext;
 
-    //custom constructor
-    public MovieAdapter(Activity context, List<Movie> movies) {
-        super(context, 0, movies);
+    public MovieAdapter(Context context) {
+        mContext = context;
+        mMovies = new ArrayList<>();
+//        mMovies.add(new Movie(7410L,"TITLE1","http://image.tmdb.org/t/p/w154//oAISjx6DvR2yUn9dxj00vP8OcJJ.jpg","OVERVIEW1",10.5,55L));
+    }
+
+    @Override
+    public int getCount() {
+
+        return mMovies.size();
+    }
+
+    @Override
+    public Movie getItem(int position) {
+        if (position < 0 || position >= mMovies.size()) {
+            Log.v(LOG_TAG, "Adapter Array List Empty");
+            return null;
+        }
+        return mMovies.get(position);
+
+    }
+
+    @Override
+    public long getItemId(int position) {
+        Movie movie = getItem(position);
+        if (movie == null) {
+            Log.v(LOG_TAG, "NO MOVIE OBJECT FOUND");
+            return -1L;
+        }
+        return movie.id;
 
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //get movie object from adapter
+//        Display display = getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+//        display.getSize(size);
+//        int width = size.x;
+//        int height = size.y;
+
+//        CHECK IF MOVIE OBJECT IS PASSED
         Movie movie = getItem(position);
-
-
+        if (movie == null) {
+            Log.v(LOG_TAG, "NO MOVIE OBJECT FOUND");
+            return null;
+        }
+        ImageView imageView;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.movie_item, parent, false
-            );
+//            IF NOT BEING RECYCLED, INITIALIZE
+            imageView = new ImageView(mContext);
+            imageView.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.WRAP_CONTENT, GridView.LayoutParams.WRAP_CONTENT));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+
+        } else {
+//            ELSE ASSIGN THE IMAGE VIEW
+            imageView = (ImageView) convertView;
         }
 
-        ImageView posterView = (ImageView) convertView.findViewById(R.id.movie_poster_view);
-        posterView.setImageResource(movie.itemPoster);
+//        ASSIGN RESOURCE TO IMAGE VIEW
+        // TODO: 12-11-2015 replace hardcoded size with string.xml reference and make it dynamic according to screen size/device type.
+        Uri builtUri = movie.buildCoverUri("w342");
+        Picasso.with(mContext)
+                .load(builtUri)
+                .placeholder(R.drawable.sample_2)
+                .into(imageView);
 
-        return convertView;
+//        Log.v("Picasso  : ", builtUri.toString());
+
+        return imageView;
+
     }
+
+    public void addAll(Collection<Movie> xs) {
+        mMovies.addAll(xs);
+        notifyDataSetChanged();
+    }
+
+
 }
