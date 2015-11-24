@@ -1,9 +1,11 @@
 package com.creativespringbok.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,10 +36,13 @@ import java.util.Collection;
 public class MainActivityFragment extends Fragment {
 
     public static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
+    private String LOADING_MESSAGE = "Downloading Data";
+    private String LOADING_ERROR_MESSAGE = "Error! No Internet Connection!";
 
 
     //    ArrayList<Movie> fetchedMovies = new ArrayList<Movie>(Arrays.asList(movies));
 //    ArrayList<Movie> fetchedMovies = new ArrayList<Movie>();
+
     private MovieAdapter mMovieAdapter;
     private GridView mGridView;
 
@@ -58,6 +63,17 @@ public class MainActivityFragment extends Fragment {
         initializeGrid(rootView);
         startLoading();
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+
+
+        super.onResume();
+        mMovieAdapter.clear();
+        mPageNosLoaded = 0;
+        startLoading();
+
     }
 
     private void initializeGrid(View rootView) {
@@ -112,10 +128,18 @@ public class MainActivityFragment extends Fragment {
 
         mIsPageLoading = true;
         if (mLoading != null) {
+            mLoading.setText(LOADING_MESSAGE);
             mLoading.setVisibility((View.VISIBLE));
         }
 
         new FetchMovieTask().execute(mPageNosLoaded + 1);
+    }
+
+    private void errorLoading() {
+        if (mLoading != null) {
+//            mLoading.setText(LOADING_ERROR_MESSAGE);
+            mLoading.setVisibility((View.VISIBLE));
+        }
     }
 
     private void stopLoading() {
@@ -148,11 +172,17 @@ public class MainActivityFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
+            SharedPreferences sharedPref;
+            sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+
             // Will contain the raw JSON response as a string.
             int numEntries = 40;
+
             String movieJsonStr = null;
-            String sortByVal = "popularity.desc";
-            String apiKeyVal = "Tmdb api key";
+            String orderByVal = sharedPref.getString("sort_order", "desc");
+            String sortByVal = sharedPref.getString("sort_by", "popularity");
+            String apiKeyVal = "api_key_here";
 
             try {
                 final String TMDb_BASE_URI = "http://api.themoviedb.org/3/discover/movie";
@@ -163,7 +193,7 @@ public class MainActivityFragment extends Fragment {
 
                 Uri builtUri = Uri.parse(TMDb_BASE_URI).buildUpon()
                         .appendQueryParameter(PAGE_PARAM, String.valueOf(pageNo))
-                        .appendQueryParameter(SORT_BY_PARAM, sortByVal)
+                        .appendQueryParameter(SORT_BY_PARAM, sortByVal + "." + orderByVal)
                         .appendQueryParameter(API_KEY_PARAM, apiKeyVal)
                         .build();
 
@@ -224,17 +254,22 @@ public class MainActivityFragment extends Fragment {
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
+            } catch (NullPointerException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+                errorLoading();
             }
             return null;
         }
 
         private Collection<Movie> getMovieDataFromJson(String movieJsonStr)
-                throws JSONException {
+                throws JSONException, NullPointerException {
             Log.v("STATUS REP : " + LOG_TAG + " : ", "getMoviedataFromJson called !!");
 
             JSONObject movieJsonObj = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJsonObj.getJSONArray("results");
             ArrayList arrayList = new ArrayList<>();
+
 
             for (int j = 0; j < movieArray.length(); j++) {
 //                Log.v("STATUS REP : " + LOG_TAG + " : ", "ENTERED JSON PARSING LOOP");
@@ -250,7 +285,7 @@ public class MainActivityFragment extends Fragment {
         protected void onPostExecute(Collection<Movie> movies) {
 //            super.onPostExecute(movies);
             if (movies == null) {
-                Toast.makeText(getActivity(), "SERVER ERROR !!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), LOADING_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
                 stopLoading();
                 return;
             }

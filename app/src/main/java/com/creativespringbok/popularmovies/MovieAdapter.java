@@ -102,5 +102,10 @@ public class MovieAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void clear() {
+        mMovies.clear();
+        notifyDataSetChanged();
+    }
+
 
 }

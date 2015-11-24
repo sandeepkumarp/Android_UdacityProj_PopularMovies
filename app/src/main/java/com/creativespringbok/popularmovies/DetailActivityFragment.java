@@ -46,15 +46,15 @@ public class DetailActivityFragment extends Fragment {
                 Picasso.with(getContext()).load(builtUri.toString()).into((ImageView) rootView.findViewById(R.id.movie_item_poster));
 //                ((ImageView) rootView.findViewById(R.id.movie_item_poster)).setImageResource(posterStr);
             }
-            String ratingStr = movie.vote_average.toString() + "/" + movie.vote_count.toString();
+            String ratingStr = movie.vote_average.toString();
             if (ratingStr != null) {
                 ((TextView) rootView.findViewById(R.id.movie_item_rating)).setText(ratingStr.toString());
             }
-//            Log.v("Detail Activity", posterStr.toString());
-//            String rel_date_Str = extras.getString("ITEM_RELEASE_DATE");
-//            if (rel_date_Str != null) {
-//                ((TextView) rootView.findViewById(R.id.movie_item_release_date)).setText(rel_date_Str);
-//            }
+
+            String rel_date_Str = movie.release_date.toString();
+            if (rel_date_Str != null) {
+                ((TextView) rootView.findViewById(R.id.movie_item_release_date)).setText(rel_date_Str);
+            }
             String synopsisStr = movie.overview;
             if (synopsisStr != null) {
                 ((TextView) rootView.findViewById(R.id.movie_item_synopsis)).setText(synopsisStr);
