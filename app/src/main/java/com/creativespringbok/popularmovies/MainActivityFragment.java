@@ -1,5 +1,6 @@
 package com.creativespringbok.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -7,14 +8,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -48,7 +51,8 @@ public class MainActivityFragment extends Fragment {
 
     private boolean mIsPageLoading = false;
     private int mPageNosLoaded = 0;
-    private TextView mLoading;
+    //    private TextView mLoading;
+    private ProgressBar mLoadingBar;
 
     public MainActivityFragment() {
     }
@@ -59,7 +63,8 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mMovieAdapter = new MovieAdapter(getActivity());
-        mLoading = (TextView) rootView.findViewById(R.id.loading);
+//        mLoading = (TextView) rootView.findViewById(R.id.loading);
+        mLoadingBar = (ProgressBar) rootView.findViewById(R.id.loadingDataProgressBar);
         initializeGrid(rootView);
         startLoading();
         return rootView;
@@ -77,12 +82,26 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void initializeGrid(View rootView) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+
+        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        final int GRID_WIDTH = displayMetrics.widthPixels;
+        final int MIN_COL_WIDTH = 250;
+        int optimalColCount = Math.round(GRID_WIDTH / MIN_COL_WIDTH);
+        int actualColWidth = GRID_WIDTH / optimalColCount;
+
         mGridView = (GridView) rootView.findViewById(R.id.movies_grid);
         if (mGridView == null) {
             Log.v(LOG_TAG, "Grid View NOT FOUND!! ");
             return;
         }
+
+        mGridView.setNumColumns(optimalColCount);
+        mGridView.setColumnWidth(actualColWidth);
+        mGridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
         mGridView.setAdapter(mMovieAdapter);
+
 
         Log.v("STATUS REP : ", "ADAPTER WAS SET TO GRID VIEW !");
 
@@ -127,18 +146,21 @@ public class MainActivityFragment extends Fragment {
         }
 
         mIsPageLoading = true;
-        if (mLoading != null) {
-            mLoading.setText(LOADING_MESSAGE);
-            mLoading.setVisibility((View.VISIBLE));
+        if (mLoadingBar != null) {
+//            mLoading.setText(LOADING_MESSAGE);
+//            mLoading.setVisibility((View.VISIBLE));
+
+            mLoadingBar.setVisibility(View.VISIBLE);
         }
 
         new FetchMovieTask().execute(mPageNosLoaded + 1);
     }
 
     private void errorLoading() {
-        if (mLoading != null) {
+        if (mLoadingBar != null) {
 //            mLoading.setText(LOADING_ERROR_MESSAGE);
-            mLoading.setVisibility((View.VISIBLE));
+//            mLoading.setVisibility((View.VISIBLE));
+            mLoadingBar.setVisibility(View.VISIBLE);
         }
     }
 
@@ -148,9 +170,10 @@ public class MainActivityFragment extends Fragment {
         }
 
         mIsPageLoading = false;
-        if (mLoading != null) {
+        if (mLoadingBar != null) {
 
-            mLoading.setVisibility(View.GONE);
+//            mLoading.setVisibility(View.GONE);
+            mLoadingBar.setVisibility(View.GONE);
         }
     }
 
@@ -182,7 +205,7 @@ public class MainActivityFragment extends Fragment {
             String movieJsonStr = null;
             String orderByVal = sharedPref.getString("sort_order", "desc");
             String sortByVal = sharedPref.getString("sort_by", "popularity");
-            String apiKeyVal = "api_key_here";
+            String apiKeyVal = "_YOUR_API_KEY_HERE_";
 
             try {
                 final String TMDb_BASE_URI = "http://api.themoviedb.org/3/discover/movie";

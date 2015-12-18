@@ -85,11 +85,12 @@ public class MovieAdapter extends BaseAdapter {
 
 //        ASSIGN RESOURCE TO IMAGE VIEW
         // TODO: 12-11-2015 replace hardcoded size with string.xml reference and make it dynamic according to screen size/device type.
-        Uri builtUri = movie.buildCoverUri("w342");
+        Uri builtUri = movie.buildCoverUri("w500");
         Picasso.with(mContext)
                 .load(builtUri)
                 .placeholder(R.drawable.sample_2)
                 .into(imageView);
+        imageView.setAdjustViewBounds(true);
 
 //        Log.v("Picasso  : ", builtUri.toString());
 

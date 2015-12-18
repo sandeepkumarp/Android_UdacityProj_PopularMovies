@@ -9,25 +9,13 @@
         android:id="@+id/movies_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:horizontalSpacing="4dp"
-        android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="10dp" />
+        android:stretchMode="columnWidth" />
 
-
-    <TextView
-
-        android:id="@+id/loading"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/loadingDataProgressBar"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="false"
-        android:background="@color/material_blue_grey_800"
-        android:enabled="true"
+        android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:text="DOWNLOADING DATA..."
-        android:textSize="@dimen/abc_text_size_large_material"
         android:visibility="visible" />
 </RelativeLayout>
